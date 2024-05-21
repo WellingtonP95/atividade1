@@ -44,6 +44,33 @@ public class ProdutosDAO {
         }
     }
     
+    public int venderProduto (int id) {
+        try {
+            conn = new conectaDAO().connectDB();
+            
+            String sqlSelect = "SELECT status FROM produtos WHERE id = ?";
+            PreparedStatement prepSelect = conn.prepareStatement(sqlSelect);
+            prepSelect.setInt(1, id);
+            resultset = prepSelect.executeQuery();
+            
+            if (resultset.next() && "A Venda".equals(resultset.getString("status"))) {
+                String sqlUpdate = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+                prep = conn.prepareStatement(sqlUpdate);
+                prep.setInt(1, id);
+                prep.executeUpdate();
+                
+                System.out.println("Produto vendido com sucesso.");
+                return 1;
+            } else {
+                System.out.println("Produto indisponível para venda.");
+                return 0;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erro ao vender o produto " + ex.getMessage());
+            return 0;
+        }
+    }
+    
     public ArrayList<ProdutosDTO> listarProdutos(){
         try {
             conn = new conectaDAO().connectDB();
